@@ -139,10 +139,12 @@ int lwm2m_init_firmware(void);
  */
 int lwm2m_init_image(void);
 
+#if defined(CONFIG_NRF_MODEM_LIB)    
 /**
  * @brief Verifies modem firmware update
  */
 void lwm2m_verify_modem_fw_update(void);
+#endif
 #endif
 
 #if defined(CONFIG_LWM2M_CLIENT_UTILS_CONN_MON_OBJ_SUPPORT)

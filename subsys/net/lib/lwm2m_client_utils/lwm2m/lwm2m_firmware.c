@@ -6,14 +6,18 @@
 
 #include <zephyr/kernel.h>
 #include <stdio.h>
+#if defined(CONFIG_NRF_MODEM_LIB)    
 #include <nrf_modem.h>
+#endif
 #include <zephyr/drivers/flash.h>
 #include <dfu/dfu_target.h>
 #include <dfu/dfu_target_mcuboot.h>
 #include <zephyr/dfu/mcuboot.h>
 #include <zephyr/logging/log_ctrl.h>
 #include <zephyr/net/lwm2m.h>
+#if defined(CONFIG_NRF_MODEM_LIB)
 #include <modem/nrf_modem_lib.h>
+#endif
 #include <zephyr/sys/reboot.h>
 #include <net/fota_download.h>
 #include <net/lwm2m_client_utils.h>
@@ -59,6 +63,7 @@ static struct k_work download_work;
 
 void client_acknowledge(void);
 
+#if defined(CONFIG_NRF_MODEM_LIB)
 NRF_MODEM_LIB_ON_INIT(lwm2m_firmware_init_hook,
 		      on_modem_lib_init, NULL);
 
@@ -69,6 +74,7 @@ static void on_modem_lib_init(int ret, void *ctx)
 {
 	modem_lib_init_result = ret;
 }
+#endif
 
 #if defined(CONFIG_DFU_TARGET_FULL_MODEM)
 static void apply_fmfu_from_ext_flash(struct k_work *work)
@@ -529,6 +535,7 @@ int lwm2m_init_firmware(void)
 	return 0;
 }
 
+#if defined(CONFIG_NRF_MODEM_LIB)    
 void lwm2m_verify_modem_fw_update(void)
 {
 	struct update_counter counter;
@@ -573,6 +580,7 @@ void lwm2m_verify_modem_fw_update(void)
 	LOG_PANIC();
 	sys_reboot(SYS_REBOOT_COLD);
 }
+#endif
 
 int lwm2m_init_image(void)
 {

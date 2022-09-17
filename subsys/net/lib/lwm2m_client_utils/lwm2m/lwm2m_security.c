@@ -10,8 +10,12 @@
 #include <lwm2m_engine.h>
 #include <lwm2m_rd_client.h>
 #include <lwm2m_util.h>
+#if defined(CONFIG_MODEM_KEY_MGMT)
 #include <modem/modem_key_mgmt.h>
+#endif
+#if defined(CONFIG_LTE_LINK_CONTROL)
 #include <modem/lte_lc.h>
+#endif
 #include <zephyr/settings/settings.h>
 
 #include <zephyr/logging/log.h>
@@ -29,6 +33,7 @@ LOG_MODULE_REGISTER(lwm2m_security, CONFIG_LWM2M_CLIENT_UTILS_LOG_LEVEL);
 #define SERVER_SHORT_SERVER_ID 0
 #define SERVER_LIFETIME_ID 1
 
+#if defined(CONFIG_LTE_LINK_CONTROL)
 static struct modem_mode_change mm;
 
 int lwm2m_modem_mode_cb(enum lte_lc_func_mode new_mode, void *user_data)
@@ -61,6 +66,7 @@ int lwm2m_modem_mode_cb(enum lte_lc_func_mode new_mode, void *user_data)
 
 	return ret;
 }
+#endif
 
 #if defined(CONFIG_LWM2M_DTLS_SUPPORT)
 #define SETTINGS_PREFIX "lwm2m:sec"
@@ -504,8 +510,11 @@ static int init_default_security_obj(struct lwm2m_ctx *ctx, char *endpoint)
 
 int lwm2m_init_security(struct lwm2m_ctx *ctx, char *endpoint, struct modem_mode_change *mmode)
 {
+#if defined(CONFIG_LWM2M_DTLS_SUPPORT)        
 	have_permanently_stored_keys = false;
+#endif
 
+#if defined(CONFIG_LTE_LINK_CONTROL)
 	/* Restore the default if not a callback function */
 	if (!mmode) {
 		mm.cb = lwm2m_modem_mode_cb;
@@ -514,6 +523,7 @@ int lwm2m_init_security(struct lwm2m_ctx *ctx, char *endpoint, struct modem_mode
 		mm.cb = mmode->cb;
 		mm.user_data = mmode->user_data;
 	}
+#endif
 
 #if defined(CONFIG_LWM2M_DTLS_SUPPORT)
 	ctx->tls_tag = IS_ENABLED(CONFIG_LWM2M_RD_CLIENT_SUPPORT_BOOTSTRAP) ?
@@ -569,3 +579,4 @@ int lwm2m_init_security(struct lwm2m_ctx *ctx, char *endpoint, struct modem_mode
 
 	return init_default_security_obj(ctx, endpoint);
 }
+
