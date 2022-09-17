@@ -53,8 +53,7 @@ manifest:
     - name: zephyr
       remote: github-ghlu
       repo-path: nrfconnect-sdk-zephyr
-      # revision: v3.1.99-ncs1
-      revision: 86893246053c50d34618f09ec6722cae8ba19472
+      revision: v3.1.99-ncs1
       import:
         # In addition to the zephyr repository itself, NCS also
         # imports the contents of zephyr/west.yml at the above
